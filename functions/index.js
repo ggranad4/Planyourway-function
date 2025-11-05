@@ -27,7 +27,24 @@ exports.createPaymentLink = onRequest(
         } = req.body;
 
         if (!bindColor || !fontStyle || !letters || !calendar) {
-          return res.status(400).json({ error: "Missing required fields" });
+          if (!bindColor) {
+            return res
+              .status(400)
+              .json({ error: "Missing required bind color" });
+          }
+          if (!fontStyle) {
+            return res
+              .status(400)
+              .json({ error: "Missing required font style" });
+          }
+          if (!letters) {
+            return res.status(400).json({ error: "Missing required letters" });
+          }
+          if (!calendar) {
+            return res
+              .status(400)
+              .json({ error: "Missing required calendar type" });
+          }
         }
 
         const price = await stripe.prices.create({
