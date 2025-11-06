@@ -15,7 +15,7 @@ exports.createPaymentLink = onRequest(
   async (req, res) => {
     corsHandler(req, res, async () => {
       const stripe = require("stripe")(stripeKey.value());
-      const errorMessage = "";
+      const missingFields = [];
       try {
         const {
           bindColor,
@@ -27,21 +27,13 @@ exports.createPaymentLink = onRequest(
         } = req.body;
 
         if (!bindColor || !fontStyle || !letters || !calendar) {
-          if (!bindColor) {
-            errorMessage.concat("Bind Color");
-          }
-          if (!fontStyle) {
-            errorMessage.concat("Font Style");
-          }
-          if (!letters) {
-            errorMessage.concat("Letters");
-          }
-          if (!calendar) {
-            errorMessage.concat("Calendar Type");
-          }
+          if (!bindColor) missingFields.push("Bind Color");
+          if (!fontStyle) missingFields.push("Font Style");
+          if (!letters) missingFields.push("Letters");
+          if (!calendar) missingFields.push("Calendar Type");
           return res
             .status(400)
-            .json({ error: "Missing required..." + errorMessage });
+            .json({ error: `Missing required...${missingFields.join(", ")}` });
         }
 
         const price = await stripe.prices.create({
