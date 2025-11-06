@@ -15,7 +15,7 @@ exports.createPaymentLink = onRequest(
   async (req, res) => {
     corsHandler(req, res, async () => {
       const stripe = require("stripe")(stripeKey.value());
-
+      const errorMessage = "";
       try {
         const {
           bindColor,
@@ -28,23 +28,20 @@ exports.createPaymentLink = onRequest(
 
         if (!bindColor || !fontStyle || !letters || !calendar) {
           if (!bindColor) {
-            return res
-              .status(400)
-              .json({ error: "Missing required bind color" });
+            errorMessage.concat("Bind Color");
           }
           if (!fontStyle) {
-            return res
-              .status(400)
-              .json({ error: "Missing required font style" });
+            errorMessage.concat("Font Style");
           }
           if (!letters) {
-            return res.status(400).json({ error: "Missing required letters" });
+            errorMessage.concat("Letters");
           }
           if (!calendar) {
-            return res
-              .status(400)
-              .json({ error: "Missing required calendar type" });
+            errorMessage.concat("Calendar Type");
           }
+          return res
+            .status(400)
+            .json({ error: "Missing required..." + errorMessage });
         }
 
         const price = await stripe.prices.create({
